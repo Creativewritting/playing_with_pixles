@@ -6,7 +6,7 @@
 /*   By: jcone <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/09 12:56:04 by jcone             #+#    #+#             */
-/*   Updated: 2017/02/10 16:47:34 by jcone            ###   ########.fr       */
+/*   Updated: 2017/02/10 17:34:58 by jcone            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -338,6 +338,178 @@ int draw_line_dotted(void *mlx, void *win, int x, int y, int x2, int y2, int col
 	}
 	return (0);
 }
+
+int draw_filled_line(void *mlx, void *win, int x, int y, int x2, int y2, int color, int thickness)
+{
+	int t_count;
+	double x_count;
+	double y_count;
+	double increase_y;
+	double increase_x;
+	double slope;
+	double hold_t_start;
+
+	t_count = 0;
+	x_count = x;
+	y_count = y;
+	increase_y = 1;
+	increase_x = 1;
+	slope = 0;
+	if ((x2 - x) == 0)
+	{
+		increase_x = 0;
+		increase_y = 1;
+	}
+	else if ((y2 - y) == 0)
+	{
+		increase_x = 1;
+		increase_y = 0;
+	}
+	else
+	{
+		slope = fmod((y2 - y), ( x2 - x));
+		if (slope == 0)
+		{
+			increase_y = (y2 - y) / (x2 - x);
+			if (increase_y < 0 && (y2 - y) > 0)
+			{
+				increase_y *= -1;
+				increase_x *= -1;
+			}
+			if (increase_y > 0 && (y2 - y) < 0 && (x2 - x) < 0)
+			{
+				increase_y *= -1;
+				increase_x *= -1;
+			}
+		//		increase_y = (y2 - y) / (x2 - x);
+		}
+		else if (slope != 0)
+		{
+			if (slope >= 0)
+				increase_x = /*fmod((y2 - y), (x2 - x));*/ (x2 - x) * (1 / slope);
+			else	
+				increase_x = /*fmod((y2 - y), (x2 - x));*/ (x2 - x) * (1 / slope) * -1;
+		}	//increase_x = /*fmod((y2 - y), (x2 - x));*/ (x2 - x) * (1 / slope);
+		slope = 1 / slope;
+	}
+	if (thickness > 1)
+	{
+		hold_t_start = (x_count - (thickness / 2));
+		t_count = hold_t_start;
+	}
+	else 
+		hold_t_start = 0;
+//	if (increase_x > 1 || increase_x < -1 || increase_y > 1 || increase_x < -1)
+//	{
+//		increase_x *= .1;
+//		increase_y *= .1;
+//	}
+/*	printf("in draw line\n");
+	if (x <= x2 && y <= y2)
+	{
+		printf("incease_x >= 0 && incearese_y >= 0\n");
+*/		while (!(y_count == y2 && x_count == x2))
+		{
+			while (t_count <= hold_t_start + thickness)
+			{
+				mlx_pixel_put(mlx, win, x_count + t_count, y_count, color);
+				t_count += 1;
+			}
+			if (increase_x != 1 && increase_x >= 0)
+			{
+				t_count = hold_t_start + 1;
+				while (t_count <= hold_t_start + increase_x - 1)
+				{
+					mlx_pixel_put(mlx, win, x_count + t_count, y_count, color);
+					t_count += 1;
+				}
+			}
+			if (increase_y != 1 && increase_y >= 0)
+			{
+				t_count = hold_t_start + 1;
+				while (t_count <= hold_t_start + increase_y - 1)
+				{
+					mlx_pixel_put(mlx, win, x_count, y_count + t_count, color);
+					t_count += 1;
+				}
+			}
+			if (increase_x != -1 && increase_x < 0)
+			{
+				t_count = hold_t_start + 1;
+				while (t_count >= hold_t_start + increase_x - 1)
+				{
+					mlx_pixel_put(mlx, win, x_count + t_count, y_count, color);
+					t_count -= 1;
+				}
+			}
+			if (increase_y != -1 && increase_y < 0)
+			{
+				t_count = hold_t_start + 1;
+				while (t_count >= hold_t_start + increase_y - 1)
+				{
+					mlx_pixel_put(mlx, win, x_count, y_count + t_count, color);
+					t_count -= 1;
+				}
+			}
+			if (y_count != y2)
+				y_count += 1 * increase_y;
+			if (x_count != x2)
+				x_count += 1 * increase_x;
+		}
+/*	}
+	else if (x >= x2 && y >= y2)
+	{
+		printf("incease_x <= 0 && incearese_y <= 0\n");
+		while (!(y_count >= y2 && x_count >= x2))
+		{
+			while (t_count <= hold_t_start + thickness)
+			{
+				mlx_pixel_put(mlx, win, x_count + t_count, y_count, color);
+				t_count += 1;
+			}
+		if (y_count != y2)
+			printf("2 y_count == %f\n", (y_count += 1 * increase_y));
+		if (x_count != x2)
+			printf("2x_count == %f\n", (x_count += 1 * increase_x));
+		}
+	}
+	
+	else if (x <=  x2 && y >= y2)
+	{
+		printf("x <= x2 && y >= y2\n");
+		while (!(y_count >= y2 && x_count <= x2))
+		{
+			while (t_count <= hold_t_start + thickness)
+			{
+				mlx_pixel_put(mlx, win, x_count + t_count, y_count, color);
+				t_count += 1;
+			}
+		if (y_count != y2)
+			printf("3 y_count == %f\n", (y_count += 1 * increase_y));
+		if (x_count != x2)
+			printf("3x_count == %f\n", (x_count += 1 * increase_x));
+		}
+	}
+	
+	else if (x >= x2 && y <= y2)
+	{
+		printf("x >= x2 && y <= y2\n");
+		while ((y_count <= y2 && x_count >= x2))
+		{
+			while (t_count <= hold_t_start + thickness)
+			{
+				mlx_pixel_put(mlx, win, x_count + t_count, y_count, color);
+				t_count += 1;
+			}
+		if (y_count != y2)
+			printf("4 y_count == %f\n", (y_count += 1 * increase_y));
+		if (x_count != x2)
+			printf("4 x_count == %f\n", (x_count += 1 * increase_x));
+		}
+	}*/
+		return (0);
+}
+
 int draw_line(void *mlx, void *win, int x, int y, int x2, int y2, int color, int thickness)
 {
 	int t_count;
@@ -405,51 +577,14 @@ int draw_line(void *mlx, void *win, int x, int y, int x2, int y2, int color, int
 			mlx_pixel_put(mlx, win, x_count + t_count, y_count, color);
 			t_count += 1;
 		}
-	/*	if (increase_x != 1 && increase_x >= 0)
-		{
-		t_count = hold_t_start + 1;
-		while (t_count <= hold_t_start + increase_x - 1)
-		{
-			mlx_pixel_put(mlx, win, x_count + t_count, y_count, color);
-			t_count += 1;
-		}
-		}
-		if (increase_y != 1 && increase_y >= 0)
-		{
-		t_count = hold_t_start + 1;
-			while (t_count <= hold_t_start + increase_y - 1)
-		{
-			mlx_pixel_put(mlx, win, x_count, y_count + t_count, color);
-			t_count += 1;
-		}
-		}
-		if (increase_x != -1 && increase_x < 0)
-		{
-		t_count = hold_t_start + 1;
-		while (t_count >= hold_t_start + increase_x - 1)
-		{
-			mlx_pixel_put(mlx, win, x_count + t_count, y_count, color);
-			t_count -= 1;
-		}
-		}
-		if (increase_y != -1 && increase_y < 0)
-		{
-		t_count = hold_t_start + 1;
-			while (t_count >= hold_t_start + increase_y - 1)
-		{
-			mlx_pixel_put(mlx, win, x_count, y_count + t_count, color);
-			t_count -= 1;
-		}
-		}*/
 		t_count = hold_t_start;
-		printf("increase_y == %f\n", increase_y);
+		printf("increase_y == %f\n", .1 * increase_y);
 		printf("y2 == %d\n", y2);
 		printf("x2 == %d\n", x2);
-		printf("increase_x == %f\n", increase_x);
+		printf("increase_x == %f\n", .1 * increase_x);
 		printf("thickness == %d\n", thickness);
 		printf("hold_t_start == %f\n", hold_t_start);
 		printf("slope == %f\n", slope);
-//		printf("slope2 == %f\n", (double)((y2 - y)/(x2 - x)));
 		if (y_count != y2)
 			printf(" y_count == %f\n", (y_count += 1 * increase_y));
 		if (x_count != x2)
@@ -548,7 +683,7 @@ int		draw_partial_circle(void *mlx, void *win, double r, double start, double en
 		}
 		thickness_r = hold_t_start;
 	//note the smaller the more acurate but any smaller and it takes to long.
-		printf("theta = %f\n", (theta += .001));
+		theta += .001;
 	}
 	return (0);
 }
