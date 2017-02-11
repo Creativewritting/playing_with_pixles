@@ -6,7 +6,7 @@
 /*   By: jcone <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/09 12:56:04 by jcone             #+#    #+#             */
-/*   Updated: 2017/02/10 17:34:58 by jcone            ###   ########.fr       */
+/*   Updated: 2017/02/11 14:23:05 by jcone            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,69 @@ int		done(int keycode)
 	return (0);
 }
 
+void place_point_for_line(double hold_t_start, double *x_count, double * y_count, int color, void *mlx, void *win, double increase_x, double increase_y, int thickness, int x2, int y2)
+{
+	int t_count;
+
+	t_count = 0;
+	while (t_count <= hold_t_start + thickness)
+	{
+		mlx_pixel_put(mlx, win, *x_count + t_count, *y_count, color);
+		t_count += 1;
+	}
+	t_count = hold_t_start;
+	printf("increase_y == %f\n", .1 * increase_y);
+	printf("increase_x == %f\n", .1 * increase_x);
+	printf("thickness == %d\n", thickness);
+	printf("hold_t_start == %f\n", hold_t_start);
+	if (*y_count != y2)
+		printf(" y_count == %f\n", (*y_count += 1 * increase_y));
+	if (*x_count != x2)
+		printf("x_count == %f\n", (*x_count += 1 * increase_x));
+}
+
+void calculate_increase_for_line(double *increase_x, double *increase_y, int x, int y, int x2, int y2)
+{
+	double slope;
+
+	slope = 0;
+	if ((x2 - x) == 0)
+	{
+		*increase_x = 0;
+		*increase_y = 1;
+	}
+	else if ((y2 - y) == 0)
+	{
+		*increase_x = 1;
+		*increase_y = 0;
+	}
+	else
+	{
+		slope = fmod((y2 - y), ( x2 - x));
+		if (slope == 0)
+		{
+			*increase_y = (y2 - y) / (x2 - x);
+			if (*increase_y < 0 && (y2 - y) > 0)
+			{
+				*increase_y *= -1;
+				*increase_x *= -1;
+			}
+			if (*increase_y > 0 && (y2 - y) < 0 && (x2 - x) < 0)
+			{
+				*increase_y *= -1;
+				*increase_x *= -1;
+			}
+		}
+		else if (slope != 0)
+		{
+			if (slope >= 0)
+				*increase_x = (x2 - x) * (1 / slope);
+			else	
+				*increase_x = (x2 - x) * (1 / slope) * -1;
+		}
+		slope = 1 / slope;
+	}
+}
 
 int draw_line_angled(void *mlx, void *win, int x, int y, int x2, int y2, int color, int thickness)
 {
@@ -52,7 +115,7 @@ int draw_line_stiched(void *mlx, void *win, int x, int y, int x2, int y2, int co
 	double y_count;
 	double increase_y;
 	double increase_x;
-	double slope;
+//	double slope;
 	double hold_t_start;
 
 	t_count = 0;
@@ -60,7 +123,8 @@ int draw_line_stiched(void *mlx, void *win, int x, int y, int x2, int y2, int co
 	y_count = y;
 	increase_y = 1;
 	increase_x = 1;
-	slope = 0;
+	calculate_increase_for_line(&increase_x, &increase_y, x, y, x2, y2);
+/*	slope = 0;
 	if ((x2 - x) == 0)
 	{
 		increase_x = 0;
@@ -78,10 +142,10 @@ int draw_line_stiched(void *mlx, void *win, int x, int y, int x2, int y2, int co
 			increase_y = (y2 - y) / (x2 - x);
 			//		increase_y = (y2 - y) / (x2 - x);
 		else if (slope != 0)
-			increase_x =/* modf(((y2 - y)/(x2 - x)), &slope);*/ (x2 - x) * (1 / slope);
-		slope = 1 / slope;
+*///			increase_x =/* modf(((y2 - y)/(x2 - x)), &slope);*/ (x2 - x) * (1 / slope);
+/*		slope = 1 / slope;
 	}
-	if (thickness > 1)
+*/	if (thickness > 1)
 	{
 		hold_t_start = (x - (thickness / 2));
 		t_count = hold_t_start;
@@ -100,7 +164,7 @@ int draw_line_stiched(void *mlx, void *win, int x, int y, int x2, int y2, int co
 		printf("increase_x == %f\n", increase_x);
 		printf("thickness == %d\n", thickness);
 		printf("hold_t_start == %f\n", hold_t_start);
-		printf("slope == %f\n", slope);
+	//	printf("slope == %f\n", slope);
 		if (y_count == y2 && x_count == x2)
 			x_count += 1;
 		if (y_count < y2)
@@ -118,7 +182,7 @@ int draw_line_hashed_line(void *mlx, void *win, int x, int y, int x2, int y2, in
 	double y_count;
 	double increase_y;
 	double increase_x;
-	double slope;
+//	double slope;
 	double hold_t_start;
 
 	t_count = 0;
@@ -126,7 +190,8 @@ int draw_line_hashed_line(void *mlx, void *win, int x, int y, int x2, int y2, in
 	y_count = y;
 	increase_y = 1;
 	increase_x = 1;
-	slope = 0;
+	calculate_increase_for_line(&increase_x, &increase_y, x, y, x2, y2);
+/*	slope = 0;
 	if ((x2 - x) == 0)
 	{
 		increase_x = 0;
@@ -144,10 +209,10 @@ int draw_line_hashed_line(void *mlx, void *win, int x, int y, int x2, int y2, in
 			increase_y = (y2 - y) / (x2 - x);
 			//		increase_y = (y2 - y) / (x2 - x);
 		else if (slope != 0)
-			increase_x =/* modf(((y2 - y)/(x2 - x)), &slope);*/ (x2 - x) * (1 / slope);
-		slope = 1 / slope;
+*///			increase_x =/* modf(((y2 - y)/(x2 - x)), &slope);*/ (x2 - x) * (1 / slope);
+/*		slope = 1 / slope;
 	}
-	if (thickness > 1)
+*/	if (thickness > 1)
 	{
 		hold_t_start = (x - (thickness / 2));
 		t_count = hold_t_start;
@@ -166,7 +231,7 @@ int draw_line_hashed_line(void *mlx, void *win, int x, int y, int x2, int y2, in
 		printf("increase_x == %f\n", increase_x);
 		printf("thickness == %d\n", thickness);
 		printf("hold_t_start == %f\n", hold_t_start);
-		printf("slope == %f\n", slope);
+		//printf("slope == %f\n", slope);
 		if (y_count == y2 && x_count == x2)
 			x_count += 1;
 		if (y_count < y2)
@@ -184,7 +249,7 @@ int draw_line_curly(void *mlx, void *win, int x, int y, int x2, int y2, int colo
 	double y_count;
 	double increase_y;
 	double increase_x;
-	double slope;
+//	double slope;
 	double hold_t_start;
 
 	t_count = 0;
@@ -192,7 +257,8 @@ int draw_line_curly(void *mlx, void *win, int x, int y, int x2, int y2, int colo
 	y_count = y;
 	increase_y = 1;
 	increase_x = 1;
-	slope = 0;
+	calculate_increase_for_line(&increase_x, &increase_y, x, y, x2, y2);
+/*	slope = 0;
 	if ((x2 - x) == 0)
 	{
 		increase_x = 0;
@@ -210,10 +276,10 @@ int draw_line_curly(void *mlx, void *win, int x, int y, int x2, int y2, int colo
 			increase_y = (y2 - y) / (x2 - x);
 			//		increase_y = (y2 - y) / (x2 - x);
 		else if (slope != 0)
-			increase_x = /*fmod((y2 - y), (x2 - x));*/ (x2 - x) * (1 / slope);
-		slope = 1 / slope;
+*///			increase_x = /*fmod((y2 - y), (x2 - x));*/ (x2 - x) * (1 / slope);
+/*		slope = 1 / slope;
 	}
-	if (thickness > 1)
+*/	if (thickness > 1)
 	{
 		hold_t_start = (x_count - (thickness / 2));
 		t_count = hold_t_start;
@@ -244,7 +310,7 @@ int draw_line_curly(void *mlx, void *win, int x, int y, int x2, int y2, int colo
 		printf("increase_x == %f\n", increase_x);
 		printf("thickness == %d\n", thickness);
 		printf("hold_t_start == %f\n", hold_t_start);
-		printf("slope == %f\n", slope);
+		//printf("slope == %f\n", slope);
 		if (y_count == y2 && x_count == x2)
 			x_count += 1;
 		if (y_count < y2)
@@ -262,7 +328,7 @@ int draw_line_dotted(void *mlx, void *win, int x, int y, int x2, int y2, int col
 	double y_count;
 	double increase_y;
 	double increase_x;
-	double slope;
+//	double slope;
 	double hold_t_start;
 
 	t_count = 0;
@@ -270,7 +336,8 @@ int draw_line_dotted(void *mlx, void *win, int x, int y, int x2, int y2, int col
 	y_count = y;
 	increase_y = 1;
 	increase_x = 1;
-	slope = 0;
+	calculate_increase_for_line(&increase_x, &increase_y, x, y, x2, y2);
+/*	slope = 0;
 	if ((x2 - x) == 0)
 	{
 		increase_x = 0;
@@ -288,10 +355,10 @@ int draw_line_dotted(void *mlx, void *win, int x, int y, int x2, int y2, int col
 			increase_y = (y2 - y) / (x2 - x);
 			//		increase_y = (y2 - y) / (x2 - x);
 		else if (slope != 0)
-			increase_x = /*fmod((y2 - y), (x2 - x));*/ (x2 - x) * (1 / slope);
-		slope = 1 / slope;
+*///			increase_x = /*fmod((y2 - y), (x2 - x));*/ (x2 - x) * (1 / slope);
+/*		slope = 1 / slope;
 	}
-	if (thickness > 1)
+*/	if (thickness > 1)
 	{
 		hold_t_start = (x_count - (thickness / 2));
 		t_count = hold_t_start;
@@ -328,7 +395,7 @@ int draw_line_dotted(void *mlx, void *win, int x, int y, int x2, int y2, int col
 		printf("increase_x == %f\n", increase_x);
 		printf("thickness == %d\n", thickness);
 		printf("hold_t_start == %f\n", hold_t_start);
-		printf("slope == %f\n", slope);
+		//printf("slope == %f\n", slope);
 		if (y_count == y2 && x_count == x2)
 			x_count += 1;
 		if (y_count < y2)
@@ -346,7 +413,7 @@ int draw_filled_line(void *mlx, void *win, int x, int y, int x2, int y2, int col
 	double y_count;
 	double increase_y;
 	double increase_x;
-	double slope;
+//	double slope;
 	double hold_t_start;
 
 	t_count = 0;
@@ -354,7 +421,8 @@ int draw_filled_line(void *mlx, void *win, int x, int y, int x2, int y2, int col
 	y_count = y;
 	increase_y = 1;
 	increase_x = 1;
-	slope = 0;
+	calculate_increase_for_line(&increase_x, &increase_y, x, y, x2, y2);
+/*	slope = 0;
 	if ((x2 - x) == 0)
 	{
 		increase_x = 0;
@@ -386,13 +454,13 @@ int draw_filled_line(void *mlx, void *win, int x, int y, int x2, int y2, int col
 		else if (slope != 0)
 		{
 			if (slope >= 0)
-				increase_x = /*fmod((y2 - y), (x2 - x));*/ (x2 - x) * (1 / slope);
-			else	
-				increase_x = /*fmod((y2 - y), (x2 - x));*/ (x2 - x) * (1 / slope) * -1;
-		}	//increase_x = /*fmod((y2 - y), (x2 - x));*/ (x2 - x) * (1 / slope);
-		slope = 1 / slope;
+*///				increase_x = /*fmod((y2 - y), (x2 - x));*/ (x2 - x) * (1 / slope);
+//			else	
+//				increase_x = /*fmod((y2 - y), (x2 - x));*/ (x2 - x) * (1 / slope) * -1;
+//		}	//increase_x = /*fmod((y2 - y), (x2 - x));*/ (x2 - x) * (1 / slope);
+/*		slope = 1 / slope;
 	}
-	if (thickness > 1)
+*/	if (thickness > 1)
 	{
 		hold_t_start = (x_count - (thickness / 2));
 		t_count = hold_t_start;
@@ -408,7 +476,7 @@ int draw_filled_line(void *mlx, void *win, int x, int y, int x2, int y2, int col
 	if (x <= x2 && y <= y2)
 	{
 		printf("incease_x >= 0 && incearese_y >= 0\n");
-*/		while (!(y_count == y2 && x_count == x2))
+*//*		while (!(y_count == y2 && x_count == x2))
 		{
 			while (t_count <= hold_t_start + thickness)
 			{
@@ -456,57 +524,262 @@ int draw_filled_line(void *mlx, void *win, int x, int y, int x2, int y2, int col
 			if (x_count != x2)
 				x_count += 1 * increase_x;
 		}
-/*	}
-	else if (x >= x2 && y >= y2)
+	*/if (y_count <= y2 && x_count <= x2)
 	{
-		printf("incease_x <= 0 && incearese_y <= 0\n");
-		while (!(y_count >= y2 && x_count >= x2))
+	while (!(y_count >= y2 && x_count >= x2))
+	{
+		while (t_count <= hold_t_start + thickness)
 		{
-			while (t_count <= hold_t_start + thickness)
+			mlx_pixel_put(mlx, win, x_count + t_count, y_count, color);
+			t_count += 1;
+		}
+			if (increase_x != 1 && increase_x >= 0)
 			{
-				mlx_pixel_put(mlx, win, x_count + t_count, y_count, color);
-				t_count += 1;
+				t_count = hold_t_start + 1;
+				while (t_count <= hold_t_start + increase_x - 1)
+				{
+					mlx_pixel_put(mlx, win, x_count + t_count, y_count, color);
+					t_count += 1;
+				}
 			}
+			if (increase_y != 1 && increase_y >= 0)
+			{
+				t_count = hold_t_start + 1;
+				while (t_count <= hold_t_start + increase_y - 1)
+				{
+					mlx_pixel_put(mlx, win, x_count, y_count + t_count, color);
+					t_count += 1;
+				}
+			}
+			if (increase_x != -1 && increase_x < 0)
+			{
+				t_count = hold_t_start + 1;
+				while (t_count >= hold_t_start + increase_x - 1)
+				{
+					mlx_pixel_put(mlx, win, x_count + t_count, y_count, color);
+					t_count -= 1;
+				}
+			}
+			if (increase_y != -1 && increase_y < 0)
+			{
+				t_count = hold_t_start + 1;
+				while (t_count >= hold_t_start + increase_y - 1)
+				{
+					mlx_pixel_put(mlx, win, x_count, y_count + t_count, color);
+					t_count -= 1;
+				}
+			}
+		t_count = hold_t_start;
+		printf("increase_y == %f\n", .1 * increase_y);
+		printf("y2 == %d\n", y2);
+		printf("x2 == %d\n", x2);
+		printf("increase_x == %f\n", .1 * increase_x);
+		printf("thickness == %d\n", thickness);
+		printf("hold_t_start == %f\n", hold_t_start);
+		//printf(" y <= y2 x <= x2 slope == %f\n", slope);
 		if (y_count != y2)
-			printf("2 y_count == %f\n", (y_count += 1 * increase_y));
+			printf(" y_count == %f\n", (y_count += 1 * increase_y));
 		if (x_count != x2)
-			printf("2x_count == %f\n", (x_count += 1 * increase_x));
+			printf("x_count == %f\n", (x_count += 1 * increase_x));
+		if (x_count > 400 || x_count < 0 || y_count > 400 || y_count < 0)
+		{
+			printf("break at error");
+			break;
 		}
 	}
-	
-	else if (x <=  x2 && y >= y2)
+	}
+	else if (y_count <= y2 && x_count >= x2)
 	{
-		printf("x <= x2 && y >= y2\n");
-		while (!(y_count >= y2 && x_count <= x2))
+	while (!(y_count >= y2 && x_count <= x2))
+	{
+		while (t_count <= hold_t_start + thickness)
 		{
-			while (t_count <= hold_t_start + thickness)
+			mlx_pixel_put(mlx, win, x_count + t_count, y_count, color);
+			t_count += 1;
+		}
+			if (increase_x != 1 && increase_x >= 0)
 			{
-				mlx_pixel_put(mlx, win, x_count + t_count, y_count, color);
-				t_count += 1;
+				t_count = hold_t_start + 1;
+				while (t_count <= hold_t_start + increase_x - 1)
+				{
+					mlx_pixel_put(mlx, win, x_count + t_count, y_count, color);
+					t_count += 1;
+				}
 			}
+			if (increase_y != 1 && increase_y >= 0)
+			{
+				t_count = hold_t_start + 1;
+				while (t_count <= hold_t_start + increase_y - 1)
+				{
+					mlx_pixel_put(mlx, win, x_count, y_count + t_count, color);
+					t_count += 1;
+				}
+			}
+			if (increase_x != -1 && increase_x < 0)
+			{
+				t_count = hold_t_start + 1;
+				while (t_count >= hold_t_start + increase_x - 1)
+				{
+					mlx_pixel_put(mlx, win, x_count + t_count, y_count, color);
+					t_count -= 1;
+				}
+			}
+			if (increase_y != -1 && increase_y < 0)
+			{
+				t_count = hold_t_start + 1;
+				while (t_count >= hold_t_start + increase_y - 1)
+				{
+					mlx_pixel_put(mlx, win, x_count, y_count + t_count, color);
+					t_count -= 1;
+				}
+			}
+		t_count = hold_t_start;
+		printf("increase_y == %f\n", .1 * increase_y);
+		printf("y2 == %d\n", y2);
+		printf("x2 == %d\n", x2);
+		printf("increase_x == %f\n", .1 * increase_x);
+		printf("thickness == %d\n", thickness);
+		printf("hold_t_start == %f\n", hold_t_start);
+	//	printf(" y <= y2 x >= x2 slope == %f\n", slope);
 		if (y_count != y2)
-			printf("3 y_count == %f\n", (y_count += 1 * increase_y));
+			printf(" y_count == %f\n", (y_count += 1 * increase_y));
 		if (x_count != x2)
-			printf("3x_count == %f\n", (x_count += 1 * increase_x));
+			printf("x_count == %f\n", (x_count += 1 * increase_x));
+		if (x_count > 400 || x_count < 0 || y_count > 400 || y_count < 0)
+		{
+			printf("break at error");
+			break;
 		}
 	}
-	
-	else if (x >= x2 && y <= y2)
+	}
+	else if (y_count >= y2 && x_count >= x2)
 	{
-		printf("x >= x2 && y <= y2\n");
-		while ((y_count <= y2 && x_count >= x2))
+	while (!(y_count <= y2 && x_count <= x2))
+	{
+		while (t_count <= hold_t_start + thickness)
 		{
-			while (t_count <= hold_t_start + thickness)
-			{
-				mlx_pixel_put(mlx, win, x_count + t_count, y_count, color);
-				t_count += 1;
-			}
-		if (y_count != y2)
-			printf("4 y_count == %f\n", (y_count += 1 * increase_y));
-		if (x_count != x2)
-			printf("4 x_count == %f\n", (x_count += 1 * increase_x));
+			mlx_pixel_put(mlx, win, x_count + t_count, y_count, color);
+			t_count += 1;
 		}
-	}*/
+			if (increase_x != 1 && increase_x >= 0)
+			{
+				t_count = hold_t_start + 1;
+				while (t_count <= hold_t_start + increase_x - 1)
+				{
+					mlx_pixel_put(mlx, win, x_count + t_count, y_count, color);
+					t_count += 1;
+				}
+			}
+			if (increase_y != 1 && increase_y >= 0)
+			{
+				t_count = hold_t_start + 1;
+				while (t_count <= hold_t_start + increase_y - 1)
+				{
+					mlx_pixel_put(mlx, win, x_count, y_count + t_count, color);
+					t_count += 1;
+				}
+			}
+			if (increase_x != -1 && increase_x < 0)
+			{
+				t_count = hold_t_start + 1;
+				while (t_count >= hold_t_start + increase_x - 1)
+				{
+					mlx_pixel_put(mlx, win, x_count + t_count, y_count, color);
+					t_count -= 1;
+				}
+			}
+			if (increase_y != -1 && increase_y < 0)
+			{
+				t_count = hold_t_start + 1;
+				while (t_count >= hold_t_start + increase_y - 1)
+				{
+					mlx_pixel_put(mlx, win, x_count, y_count + t_count, color);
+					t_count -= 1;
+				}
+			}
+		t_count = hold_t_start;
+		printf("increase_y == %f\n", .1 * increase_y);
+		printf("y2 == %d\n", y2);
+		printf("x2 == %d\n", x2);
+		printf("increase_x == %f\n", .1 * increase_x);
+		printf("thickness == %d\n", thickness);
+		printf("hold_t_start == %f\n", hold_t_start);
+		//printf(" y <= y2 x >= x2 slope == %f\n", slope);
+		if (y_count != y2)
+			printf(" y_count == %f\n", (y_count += 1 * increase_y));
+		if (x_count != x2)
+			printf("x_count == %f\n", (x_count += 1 * increase_x));
+		if (x_count > 400 || x_count < 0 || y_count > 400 || y_count < 0)
+		{
+			printf("break at error");
+			break;
+		}
+	}
+	}
+	else
+	{
+	while (!(y_count <= y2 && x_count >= x2))
+	{
+		while (t_count <= hold_t_start + thickness)
+		{
+			mlx_pixel_put(mlx, win, x_count + t_count, y_count, color);
+			t_count += 1;
+		}
+			if (increase_x != 1 && increase_x >= 0)
+			{
+				t_count = hold_t_start + 1;
+				while (t_count <= hold_t_start + increase_x - 1)
+				{
+					mlx_pixel_put(mlx, win, x_count + t_count, y_count, color);
+					t_count += 1;
+				}
+			}
+			if (increase_y != 1 && increase_y >= 0)
+			{
+				t_count = hold_t_start + 1;
+				while (t_count <= hold_t_start + increase_y - 1)
+				{
+					mlx_pixel_put(mlx, win, x_count, y_count + t_count, color);
+					t_count += 1;
+				}
+			}
+			if (increase_x != -1 && increase_x < 0)
+			{
+				t_count = hold_t_start + 1;
+				while (t_count >= hold_t_start + increase_x - 1)
+				{
+					mlx_pixel_put(mlx, win, x_count + t_count, y_count, color);
+					t_count -= 1;
+				}
+			}
+			if (increase_y != -1 && increase_y < 0)
+			{
+				t_count = hold_t_start + 1;
+				while (t_count >= hold_t_start + increase_y - 1)
+				{
+					mlx_pixel_put(mlx, win, x_count, y_count + t_count, color);
+					t_count -= 1;
+				}
+			}
+		t_count = hold_t_start;
+		printf("increase_y == %f\n", .1 * increase_y);
+		printf("y2 == %d\n", y2);
+		printf("x2 == %d\n", x2);
+		printf("increase_x == %f\n", .1 * increase_x);
+		printf("thickness == %d\n", thickness);
+		printf("hold_t_start == %f\n", hold_t_start);
+		//printf("slope == %f\n", slope);
+		if (y_count != y2)
+			printf(" y_count == %f\n", (y_count += 1 * increase_y));
+		if (x_count != x2)
+			printf("x_count == %f\n", (x_count += 1 * increase_x));
+		if (x_count > 400 || x_count < 0 || y_count > 400 || y_count < 0)
+		{
+			printf("break at error");
+			break;
+		}
+	}
+	}
 		return (0);
 }
 
@@ -525,44 +798,7 @@ int draw_line(void *mlx, void *win, int x, int y, int x2, int y2, int color, int
 	y_count = y;
 	increase_y = 1;
 	increase_x = 1;
-	slope = 0;
-	if ((x2 - x) == 0)
-	{
-		increase_x = 0;
-		increase_y = 1;
-	}
-	else if ((y2 - y) == 0)
-	{
-		increase_x = 1;
-		increase_y = 0;
-	}
-	else
-	{
-		slope = fmod((y2 - y), ( x2 - x));
-		if (slope == 0)
-		{
-			increase_y = (y2 - y) / (x2 - x);
-			if (increase_y < 0 && (y2 - y) > 0)
-			{
-				increase_y *= -1;
-				increase_x *= -1;
-			}
-			if (increase_y > 0 && (y2 - y) < 0 && (x2 - x) < 0)
-			{
-				increase_y *= -1;
-				increase_x *= -1;
-			}
-		//		increase_y = (y2 - y) / (x2 - x);
-		}
-		else if (slope != 0)
-		{
-			if (slope >= 0)
-				increase_x = /*fmod((y2 - y), (x2 - x));*/ (x2 - x) * (1 / slope);
-			else	
-				increase_x = /*fmod((y2 - y), (x2 - x));*/ (x2 - x) * (1 / slope) * -1;
-		}	//increase_x = /*fmod((y2 - y), (x2 - x));*/ (x2 - x) * (1 / slope);
-		slope = 1 / slope;
-	}
+	calculate_increase_for_line(&increase_x, &increase_y, x, y, x2, y2);
 	if (thickness > 1)
 	{
 		hold_t_start = (x_count - (thickness / 2));
@@ -570,28 +806,143 @@ int draw_line(void *mlx, void *win, int x, int y, int x2, int y2, int color, int
 	}
 	else 
 		hold_t_start = 0;
-	while (!(y_count == y2 && x_count == x2))
+	if (y_count <= y2 && x_count <= x2)
 	{
-		while (t_count <= hold_t_start + thickness)
-		{
-			mlx_pixel_put(mlx, win, x_count + t_count, y_count, color);
-			t_count += 1;
-		}
-		t_count = hold_t_start;
-		printf("increase_y == %f\n", .1 * increase_y);
-		printf("y2 == %d\n", y2);
-		printf("x2 == %d\n", x2);
-		printf("increase_x == %f\n", .1 * increase_x);
-		printf("thickness == %d\n", thickness);
-		printf("hold_t_start == %f\n", hold_t_start);
-		printf("slope == %f\n", slope);
-		if (y_count != y2)
-			printf(" y_count == %f\n", (y_count += 1 * increase_y));
-		if (x_count != x2)
-			printf("x_count == %f\n", (x_count += 1 * increase_x));
+	while (!(y_count >= y2 && x_count >= x2))
+		place_point_for_line(hold_t_start, &x_count, &y_count, color, mlx, win, increase_x, increase_y, thickness, x2, y2);
+	}
+	else if (y_count <= y2 && x_count >= x2)
+	{
+	while (!(y_count >= y2 && x_count <= x2))
+		place_point_for_line(hold_t_start, &x_count, &y_count, color, mlx, win, increase_x, increase_y, thickness, x2, y2);
+	}
+	else if (y_count >= y2 && x_count >= x2)
+	{
+	while (!(y_count <= y2 && x_count <= x2))
+		place_point_for_line(hold_t_start, &x_count, &y_count, color, mlx, win, increase_x, increase_y, thickness, x2, y2);
+	}
+	else
+	{
+	while (!(y_count <= y2 && x_count >= x2))
+		place_point_for_line(hold_t_start, &x_count, &y_count, color, mlx, win, increase_x, increase_y, thickness, x2, y2);
 	}
 	return (0);
 }
+
+
+//int draw_line(void *mlx, void *win, int x, int y, int x2, int y2, int color, int thickness)
+//{
+//	int t_count;
+//	long double x_count;
+//	long double y_count;
+//	long double slope;
+//	long double increase_x;
+//	long double hold_t_start;
+//	long double b;
+//
+//	t_count = 0;
+//	x_count = x;
+//	y_count = y;
+//	slope = 0;
+//	if ((x2 - x) == 0)
+//	{
+//		slope = 0;
+//	//	b = 0;
+////		b = y - slope * x;
+//		increase_x = 0;
+//	//	increase_y = 1;
+//	}
+//	else if ((y2 - y) == 0)
+//	{
+//		slope = 0;
+////		b = y - slope * x;
+//		increase_x = 1;
+//	//	increase_y = 0;
+//	}
+//	else
+//	{
+//		slope = fmod((y2 - y), ( x2 - x));
+//		if (slope == 0)
+//		{
+//			if (increase_y < 0 && (y2 - y) > 0)
+//			{
+//				increase_y *= -1;
+//				increase_x *= -1;
+//			}
+//			if (increase_y > 0 && (y2 - y) < 0 && (x2 - x) < 0)
+//			{
+//				increase_y *= -1;
+//				increase_x *= -1;
+//			}
+		//		increase_y = (y2 - y) / (x2 - x);
+//		}
+//	/*	else */if (slope != 0)
+//		{
+//			if (slope >= 0)
+//				increase_x = /*fmod((y2 - y), (x2 - x));*//* (x2 - x) **/ (1 / slope);
+//			else	
+//				increase_x = /*fmod((y2 - y), (x2 - x));*//* (x2 - x) * */(1 / slope) * -1;
+//		}	//increase_x = /*fmod((y2 - y), (x2 - x));*/ (x2 - x) * (1 / slope);
+///		slope = 1 / slope;
+//		slope = (y2 - y) / (x2 - x);
+//	}
+//		b = y - slope * x;
+//	if (thickness > 1)
+//	{
+//		hold_t_start = (x_count - (thickness / 2));
+//		t_count = hold_t_start;
+//	}
+//	else 
+//	{
+//		hold_t_start = 0;
+//	}
+//	while (!(y_count == y2 && x_count == x2))
+//	{
+//	
+//		while (t_count <= hold_t_start + thickness)
+//		{
+//			mlx_pixel_put(mlx, win, x_count + t_count, y_count, color);
+//			t_count += 1;
+//		}
+//		t_count = hold_t_start;
+//		printf("increase_y == %f\n", .1 * increase_y);
+//		printf("y2 == %d\n", y2);
+//		printf("x2 == %d\n", x2);
+//		printf("increase_x == %f\n", .1 * increase_x);
+//		printf("thickness == %d\n", thickness);
+//		printf("(y2 - y) = %d\n", (y2 - y));
+//		printf("(x2 - x) = %d\n", (x2 - x));
+//		if ((x2 - x) != 0)
+//			printf("(y2 - y) / (x2 - x) = %Lf\n", (long double)((y2 - y) / (x2 - x)));
+//		printf("hold_t_start == %Lf\n", hold_t_start);
+//		printf("slope == %Lf\n", slope);
+//		printf("b == %Lf\n", b);
+///		if ((x2 - x) == 0)
+//			y_count += 1;
+//		else
+//		{
+//			if ((x2 - x) < 0)
+//				x_count -= 1;
+//			else
+//				x_count += 1;
+//			y_count = y + (y2 - y) * (x_count - x)/(x2 - x);
+//			b = y - slope * x;
+//			if ((x2 - x) == 0 || (y2 - y) == 0)
+//				y_count = slope * x_count + b;
+//			else
+//				y_count = ((y2 - y) / (x2 - x)) * x_count + b;
+//		}
+//		printf("y_count = %Lf\n", y_count);
+//		printf("x_count = %Lf\n", x_count);
+//		if (x_count > 400 || y_count > 400 || x_count < 0 || y_count < 0)
+//			break;
+		//	if (y_count != y2)
+	//		printf(" y_count == %f\n", (y_count += 1 * increase_y));
+	//	if (x_count != x2)
+	//		printf("x_count == %f\n", (x_count += 1 * increase_x));
+//	}
+//	return (0);
+//}
 
 int		draw_circle(void *mlx, void *win, double r, int x_center, int y_center, int color, int thickness)
 {
@@ -672,7 +1023,7 @@ int		draw_partial_circle(void *mlx, void *win, double r, double start, double en
 	else
 		hold_t_start= 0;
 	thickness_r = hold_t_start;
-	while (theta <= end / 58.5)
+	while (theta <= end / 58)
 	{
 		while (thickness_r <= hold_t_start + thickness)
 		{
@@ -749,6 +1100,14 @@ void	playing_with_pixels(void *mlx)
 	// 65d3d8 the color of teal i like.
 	color = 0x0065d3d8;
 	draw_line(mlx, win, x, y, x2, y2, color, thickness);
+	x = 0;
+	y = 200;
+	x2 = 400;
+	y2 = 200;
+	thickness = 0;
+	// 65d3d8 the color of teal i like.
+	color = 0x0065d3d8;
+	draw_line(mlx, win, x, y, x2, y2, color, thickness);
 	x = 200;
 	y = 200;
 	r = 50;
@@ -783,10 +1142,18 @@ void	playing_with_pixels(void *mlx)
 	x = 0;
 	y = 0;
 	x2 = 200;
+	y2 = 100;
+	thickness= 0;
+	color = 0x004168e1;
+	draw_line(mlx, win, x, y, x2, y2, color, thickness);
+	x = 0;
+	y = 0;
+	x2 = 200;
 	y2 = 50;
 	thickness= 0;
 	color = 0x004168e1;
 	draw_line(mlx, win, x, y, x2, y2, color, thickness);
+
 	x = 200;
 	y = 50;
 	x2 = 0;
@@ -815,14 +1182,35 @@ void	playing_with_pixels(void *mlx)
 	thickness = 0;
 	color = 0x00FFD700;
 	draw_line(mlx, win, x, y, x2, y2, color, thickness);
-/*	x = 50;
+	x = 36;
+	y = 235;
+	x2 = 50;
+	y2 = 244;
+	thickness = 0;
+	color = 0x00C0C0C0;
+	draw_line(mlx, win, x, y, x2, y2, color, thickness);
+	x = 50;
+	y = 235;
+	x2 = 36;
+	y2 = 344;
+	thickness = 0;
+	color = 0x00C0C0C0;
+	draw_line(mlx, win, x, y, x2, y2, color, thickness);
+	x = 36;
+	y = 235;
+	x2 = 50;
+	y2 = 344;
+	thickness = 0;
+	color = 0x00C0C0C0;
+	draw_line(mlx, win, x, y, x2, y2, color, thickness);
+	x = 50;
 	y = 235;
 	x2 = 36;
 	y2 = 244;
 	thickness = 0;
 	color = 0x00C0C0C0;
 	draw_line(mlx, win, x, y, x2, y2, color, thickness);
-*/	mlx_key_hook(win, if_hook, mlx);
+	mlx_key_hook(win, if_hook, mlx);
 	//clear_line(mlx, win, x, y, x2, y2, thickness);
 	//	mlx_pixel_put(mlx, win, 20, 20, 0x00FFFFFF);
 //	mlx_key_hook(win, done, mlx);
