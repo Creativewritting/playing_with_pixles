@@ -6,7 +6,7 @@
 /*   By: jcone <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/09 12:56:04 by jcone             #+#    #+#             */
-/*   Updated: 2017/02/11 14:23:05 by jcone            ###   ########.fr       */
+/*   Updated: 2017/02/11 17:56:25 by jcone            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -761,18 +761,18 @@ int draw_filled_line(void *mlx, void *win, int x, int y, int x2, int y2, int col
 					t_count -= 1;
 				}
 			}
-		t_count = hold_t_start;
+		t_count = hold_t_start;/*
 		printf("increase_y == %f\n", .1 * increase_y);
 		printf("y2 == %d\n", y2);
 		printf("x2 == %d\n", x2);
 		printf("increase_x == %f\n", .1 * increase_x);
 		printf("thickness == %d\n", thickness);
 		printf("hold_t_start == %f\n", hold_t_start);
-		//printf("slope == %f\n", slope);
+		//printf("slope == %f\n", slope);*/
 		if (y_count != y2)
-			printf(" y_count == %f\n", (y_count += 1 * increase_y));
+			/*printf(" y_count == %f\n", (*/y_count += 1 * increase_y/*))*/;
 		if (x_count != x2)
-			printf("x_count == %f\n", (x_count += 1 * increase_x));
+			/*printf("x_count == %f\n", (*/x_count += 1 * increase_x/*))*/;
 		if (x_count > 400 || x_count < 0 || y_count > 400 || y_count < 0)
 		{
 			printf("break at error");
@@ -783,7 +783,7 @@ int draw_filled_line(void *mlx, void *win, int x, int y, int x2, int y2, int col
 		return (0);
 }
 
-int draw_line(void *mlx, void *win, int x, int y, int x2, int y2, int color, int thickness)
+int draw_thin_line(void *mlx, void *win, int x, int y, int x2, int y2, int color, int thickness, int transparency)
 {
 	int t_count;
 	double x_count;
@@ -792,13 +792,13 @@ int draw_line(void *mlx, void *win, int x, int y, int x2, int y2, int color, int
 	double increase_x;
 	double slope;
 	double hold_t_start;
+	int	color_temp;
 
 	t_count = 0;
 	x_count = x;
 	y_count = y;
 	increase_y = 1;
 	increase_x = 1;
-	calculate_increase_for_line(&increase_x, &increase_y, x, y, x2, y2);
 	if (thickness > 1)
 	{
 		hold_t_start = (x_count - (thickness / 2));
@@ -806,27 +806,151 @@ int draw_line(void *mlx, void *win, int x, int y, int x2, int y2, int color, int
 	}
 	else 
 		hold_t_start = 0;
+	if (transparency == 0)
+		color_temp = 0x80000000 + color;
+	else
+		color_temp = color;
+	calculate_increase_for_line(&increase_x, &increase_y, x, y, x2, y2);
+	if (x >= 0 && y >= 0 && x2 >= 0 && y2 >= 0)
+	{
 	if (y_count <= y2 && x_count <= x2)
 	{
 	while (!(y_count >= y2 && x_count >= x2))
-		place_point_for_line(hold_t_start, &x_count, &y_count, color, mlx, win, increase_x, increase_y, thickness, x2, y2);
+		place_point_for_line(hold_t_start, &x_count, &y_count, color_temp, mlx, win, increase_x, increase_y, thickness, x2, y2);
 	}
 	else if (y_count <= y2 && x_count >= x2)
 	{
 	while (!(y_count >= y2 && x_count <= x2))
-		place_point_for_line(hold_t_start, &x_count, &y_count, color, mlx, win, increase_x, increase_y, thickness, x2, y2);
+		place_point_for_line(hold_t_start, &x_count, &y_count, color_temp, mlx, win, increase_x, increase_y, thickness, x2, y2);
 	}
 	else if (y_count >= y2 && x_count >= x2)
 	{
 	while (!(y_count <= y2 && x_count <= x2))
-		place_point_for_line(hold_t_start, &x_count, &y_count, color, mlx, win, increase_x, increase_y, thickness, x2, y2);
+		place_point_for_line(hold_t_start, &x_count, &y_count, color_temp, mlx, win, increase_x, increase_y, thickness, x2, y2);
 	}
 	else
 	{
 	while (!(y_count <= y2 && x_count >= x2))
-		place_point_for_line(hold_t_start, &x_count, &y_count, color, mlx, win, increase_x, increase_y, thickness, x2, y2);
+		place_point_for_line(hold_t_start, &x_count, &y_count, color_temp, mlx, win, increase_x, increase_y, thickness, x2, y2);
 	}
 	return (0);
+	}
+	else
+		return(1);
+}
+
+int draw_line(void *mlx, void *win, int x, int y, int x2, int y2, int color, int thickness, int transparency)
+{
+	int t_count;
+//	static int repeate = 0;
+	double x_count;
+	double y_count;
+	double increase_y;
+	double increase_x;
+	double slope;
+	double hold_t_start;
+	int	color_temp;
+
+	t_count = 0;
+	x_count = x;
+	y_count = y;
+	increase_y = 1;
+	increase_x = 1;
+	if (thickness > 1)
+	{
+		hold_t_start = (x_count - (thickness / 2));
+		t_count = hold_t_start;
+	}
+	else 
+		hold_t_start = 0;
+	if (transparency == 0)
+	{
+		if (increase_x != 1 && increase_x >= 0)
+			{
+				t_count = hold_t_start + 1;
+				while (t_count <= hold_t_start + increase_x)
+				{
+					draw_line(mlx, win, x + 1, y, x2 + 1, y2, color, thickness, 1);
+					t_count += 1;
+				}
+			}
+			if (increase_y != 1 && increase_y >= 0)
+			{
+				t_count = hold_t_start + 1;
+				while (t_count <= hold_t_start + increase_y)
+				{
+					draw_line(mlx, win, x, y + 1, x2, y2 + 1, color, thickness, 1);
+					t_count += 1;
+				}
+			}
+			if (increase_x != -1 && increase_x < 0)
+			{
+				t_count = hold_t_start + 1;
+				while (t_count >= hold_t_start + increase_x)
+				{
+					draw_line(mlx, win, x - 1, y, x2 - 1, y2, color, thickness, 1);
+					t_count -= 1;
+				}
+			}
+			if (increase_y != -1 && increase_y < 0)
+			{
+				t_count = hold_t_start + 1;
+				while (t_count >= hold_t_start + increase_y)
+				{
+					draw_line(mlx, win, x, y - 1, x2, y2 - 1, color, thickness, 1);
+					t_count -= 1;
+				}
+			}
+		color_temp = 0x80000000 + color;
+	//	if (increase_x != 0)
+	//		draw_line(mlx, win, x + 1, y, x2 + 1, y2, color, thickness, 1);
+	//	else if (increase_y == 1)
+	//		draw_line(mlx, win, x, y + 1, x2, y2 + 1, color, thickness, 1);
+	//	if (increase_y != 0)
+	//		draw_line(mlx, win, x, y + 2, x2, y2 + 2, color_temp, thickness, 1);
+	//	if (increase_x != 0)
+	//		draw_line(mlx, win, x + 2, y, x2 + 2, y2, color_temp, thickness, 1);
+	//	draw_line(mlx, win, x + 1, y + 1, x2 + 1, y2 + 1, color_temp, thickness, 1);
+	}
+	else
+		color_temp = color;
+	calculate_increase_for_line(&increase_x, &increase_y, x, y, x2, y2);
+//	if (transparency == 0 && (repeate < fabs(increase_y) - 2 || repeate < fabs(increase_x) - 2))
+//	{
+//		repeate++;
+	//	color_temp = 0x80000000 + color;
+		//draw_line(mlx, win, x + 1, y, x2 + 1, y2, color, thickness, 0);
+	//	draw_line(mlx, win, x + 1, y, x2 + 1, y2, color_temp, thickness, 1);
+//		color_temp = 0x80000000 + color;
+//	}
+//	else
+//		repeate = 0;
+	if (x >= 0 && y >= 0 && x2 >= 0 && y2 >= 0)
+	{
+	if (y_count <= y2 && x_count <= x2)
+	{
+	while (!(y_count >= y2 && x_count >= x2))
+		place_point_for_line(hold_t_start, &x_count, &y_count, color_temp, mlx, win, increase_x, increase_y, thickness, x2, y2);
+	}
+	else if (y_count <= y2 && x_count >= x2)
+	{
+	while (!(y_count >= y2 && x_count <= x2))
+		place_point_for_line(hold_t_start, &x_count, &y_count, color_temp, mlx, win, increase_x, increase_y, thickness, x2, y2);
+	}
+	else if (y_count >= y2 && x_count >= x2)
+	{
+	while (!(y_count <= y2 && x_count <= x2))
+		place_point_for_line(hold_t_start, &x_count, &y_count, color_temp, mlx, win, increase_x, increase_y, thickness, x2, y2);
+	}
+	else
+	{
+	while (!(y_count <= y2 && x_count >= x2))
+		place_point_for_line(hold_t_start, &x_count, &y_count, color_temp, mlx, win, increase_x, increase_y, thickness, x2, y2);
+	}
+	return (0);
+	}
+	else
+		return(1);
 }
 
 
@@ -1051,7 +1175,7 @@ int if_hook(int keycode/*, void *param*/)
 
 int clear_line(void	*mlx, void *win, int x, int y, int x2, int y2, int thickness)
 {
-	draw_line(mlx, win, x, y, x2, y2, 0x00000000, thickness);
+	draw_line(mlx, win, x, y, x2, y2, 0x00000000, thickness, 0);
  	return(1);
 }
 
@@ -1066,10 +1190,12 @@ void	playing_with_pixels(void *mlx)
 	double start;
 	double end;
 	int thickness;
+	int transparency;
 	int color;
 
 	win = mlx_new_window(mlx, 400, 400, "mlx test");
 	//numbers are location in window  two 00 are transparance next is red ff, green, blue ff
+	transparency = 0;
 	x = 200;
 	y = 200;
 	x2 = 400;
@@ -1077,7 +1203,7 @@ void	playing_with_pixels(void *mlx)
 	thickness = 0;
 	// 65d3d8 the color of teal i like.
 	color = 0x0065d3d8;
-	draw_line(mlx, win, x, y, x2, y2, color, thickness);
+	draw_line(mlx, win, x, y, x2, y2, color, thickness, transparency);
 	x = 200;
 	y = 200;
 	r = 100;
@@ -1099,7 +1225,7 @@ void	playing_with_pixels(void *mlx)
 	thickness = 0;
 	// 65d3d8 the color of teal i like.
 	color = 0x0065d3d8;
-	draw_line(mlx, win, x, y, x2, y2, color, thickness);
+	draw_line(mlx, win, x, y, x2, y2, color, thickness, transparency);
 	x = 0;
 	y = 200;
 	x2 = 400;
@@ -1107,7 +1233,7 @@ void	playing_with_pixels(void *mlx)
 	thickness = 0;
 	// 65d3d8 the color of teal i like.
 	color = 0x0065d3d8;
-	draw_line(mlx, win, x, y, x2, y2, color, thickness);
+	draw_line(mlx, win, x, y, x2, y2, color, thickness, transparency);
 	x = 200;
 	y = 200;
 	r = 50;
@@ -1123,7 +1249,7 @@ void	playing_with_pixels(void *mlx)
 	y2 = 0;
 	thickness = 0;
 	color = 0x002e7a38;
-	draw_line(mlx, win, x, y, x2, y2, color, thickness);
+	draw_line(mlx, win, x, y, x2, y2, color, thickness, transparency);
 	x = 200;
 	y = 200;
 	//dose not work with 0 and 400; || negativees in genral
@@ -1131,35 +1257,35 @@ void	playing_with_pixels(void *mlx)
 	y2 = 400;
 	thickness = 0;
 	color = 0x00FFD700;
-	draw_line(mlx, win, x, y, x2, y2, color, thickness);
+	draw_line(mlx, win, x, y, x2, y2, color, thickness, transparency);
 	x = 200;
 	y = 200;
 	x2 = 0;
 	y2 = 0;
 	thickness = 0;
 	color = 0x00C0C0C0;
-	draw_line(mlx, win, x, y, x2, y2, color, thickness);
+	draw_line(mlx, win, x, y, x2, y2, color, thickness, transparency);
 	x = 0;
 	y = 0;
 	x2 = 200;
 	y2 = 100;
 	thickness= 0;
 	color = 0x004168e1;
-	draw_line(mlx, win, x, y, x2, y2, color, thickness);
+	draw_line(mlx, win, x, y, x2, y2, color, thickness, transparency);
 	x = 0;
 	y = 0;
 	x2 = 200;
 	y2 = 50;
 	thickness= 0;
 	color = 0x004168e1;
-	draw_line(mlx, win, x, y, x2, y2, color, thickness);
+	draw_line(mlx, win, x, y, x2, y2, color, thickness, transparency);
 
 	x = 200;
 	y = 50;
 	x2 = 0;
 	y2 = 100;
 	color = 0x009b0716;
-	draw_line(mlx, win, x, y, x2, y2, color, thickness);
+	draw_line(mlx, win, x, y, x2, y2, color, thickness, transparency);
 	x = 50;
 	y = 200;
 	x2 = 0;
@@ -1167,49 +1293,49 @@ void	playing_with_pixels(void *mlx)
 	thickness = 0;
 	// 65d3d8 the color of teal i like.
 	color = 0x0065d3d8;
-	draw_line(mlx, win, x, y, x2, y2, color, thickness);
+	draw_line(mlx, win, x, y, x2, y2, color, thickness, transparency);
 	x = 0;
 	y = 235;
 	x2 = 0;
 	y2 = 400;
 	thickness = 0;
 	color = 0x00FFD700;
-	draw_line(mlx, win, x, y, x2, y2, color, thickness);
+	draw_line(mlx, win, x, y, x2, y2, color, thickness, transparency);
 	x = 50;
 	y = 0;
 	x2 = 400;
 	y2 = 0;
 	thickness = 0;
 	color = 0x00FFD700;
-	draw_line(mlx, win, x, y, x2, y2, color, thickness);
+	draw_line(mlx, win, x, y, x2, y2, color, thickness, transparency);
 	x = 36;
 	y = 235;
 	x2 = 50;
 	y2 = 244;
 	thickness = 0;
 	color = 0x00C0C0C0;
-	draw_line(mlx, win, x, y, x2, y2, color, thickness);
+	draw_line(mlx, win, x, y, x2, y2, color, thickness, transparency);
 	x = 50;
 	y = 235;
 	x2 = 36;
 	y2 = 344;
 	thickness = 0;
 	color = 0x00C0C0C0;
-	draw_line(mlx, win, x, y, x2, y2, color, thickness);
+	draw_line(mlx, win, x, y, x2, y2, color, thickness, transparency);
 	x = 36;
 	y = 235;
 	x2 = 50;
 	y2 = 344;
 	thickness = 0;
 	color = 0x00C0C0C0;
-	draw_line(mlx, win, x, y, x2, y2, color, thickness);
+	draw_line(mlx, win, x, y, x2, y2, color, thickness, transparency);
 	x = 50;
 	y = 235;
 	x2 = 36;
 	y2 = 244;
 	thickness = 0;
 	color = 0x00C0C0C0;
-	draw_line(mlx, win, x, y, x2, y2, color, thickness);
+	draw_line(mlx, win, x, y, x2, y2, color, thickness, transparency);
 	mlx_key_hook(win, if_hook, mlx);
 	//clear_line(mlx, win, x, y, x2, y2, thickness);
 	//	mlx_pixel_put(mlx, win, 20, 20, 0x00FFFFFF);
