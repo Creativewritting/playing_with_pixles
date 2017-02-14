@@ -6,7 +6,7 @@
 #    By: jcone <marvin@42.fr>                       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/10/31 09:55:24 by jcone             #+#    #+#              #
-#    Updated: 2017/02/09 16:30:38 by jcone            ###   ########.fr        #
+#    Updated: 2017/02/13 16:53:26 by jcone            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,7 @@ CC = gcc
 CFLAGS = -Wall -Wextra -Werror -g
 OTHERFLAGS = -framework OpenGl -framework AppKit
 NAME = playing_with_pixels
-CNAME = playing_with_pixels.c
+CNAME = playing_with_pixels.c draw_line.c calculate_increase_for_line.c place_point_for_line.c draw_angled_line.c draw_circle.c fill_circle.c draw_partial_circle.c draw_rectangle.c if_hook.c
 HNAME = playing_with_pixels.h
 LIB = ./minilibx_macos/libmlx.a
 ONAME = $(CNAME:.c=.o)
